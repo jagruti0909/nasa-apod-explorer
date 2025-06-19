@@ -8,9 +8,8 @@ const cache = new NodeCache({ stdTTL: 3600 }); // Cache for 1 hour
 const PORT = process.env.PORT || 3000;
 const NASA_API_KEY = process.env.NASA_API_KEY || 'DEMO_KEY'; // Use env variable
 
-app.use(cors());
+app.use(cors({ origin: 'https://nasa-apod-explorer.vercel.app' }));
 app.use(express.json());
-
 app.get('/api/apod', async (req, res) => {
   const { date } = req.query;
   const cacheKey = `apod_${date || 'today'}`;
