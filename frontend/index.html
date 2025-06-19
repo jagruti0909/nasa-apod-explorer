@@ -25,11 +25,14 @@
         setError(null);
         try {
           const response = await fetch(`https://nasa-apod-backend.onrender.com/api/apod?date=${date}`);
+          console.log('Fetch URL:', `https://nasa-apod-backend.onrender.com/api/apod?date=${date}`); // Debug
           if (!response.ok) throw new Error('Failed to fetch APOD data');
           const data = await response.json();
+          console.log('Fetched data:', data); // Debug
           setApodData(data);
         } catch (err) {
           setError(err.message);
+          console.log('Fetch error:', err.message); // Debug
         } finally {
           setLoading(false);
         }
