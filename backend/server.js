@@ -13,11 +13,11 @@ app.use(express.json());
 app.get('/api/apod', async (req, res) => {
   const { date } = req.query;
   const cacheKey = `apod_${date || 'today'}`;
-
+  console.log(`Cache key: ${cacheKey}`); // Debug log
   try {
-    // Check cache
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
+      console.log(`Serving from cache: ${cacheKey}`);
       return res.json(cachedData);
     }
 
