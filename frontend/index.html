@@ -24,7 +24,7 @@
         setLoading(true);
         setError(null);
         try {
-          const response = await fetch(`http://localhost:3000/api/apod?date=${date}`);
+          const response = await fetch(`https://nasa-apod-backend.onrender.com/api/apod?date=${date}`);
           if (!response.ok) throw new Error('Failed to fetch APOD data');
           const data = await response.json();
           setApodData(data);
