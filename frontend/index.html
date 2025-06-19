@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NASA APOD Explorer</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const App = () => {
+      const [apodData, setApodData] = useState(null);
+      const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState(null);
+
+      const fetchApod = async (date) => {
+        setLoading(true);
+        setError(null);
+        try {
+          const response = await fetch(`http://localhost:3000/api/apod?date=${date}`);
+          if (!response.ok) throw new Error('Failed to fetch APOD data');
+          const data = await response.json();
+          setApodData(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      useEffect(() => {
+        fetchApod(selectedDate);
+      }, [selectedDate]);
+
+      const handleDateChange = (e) => {
+        setSelectedDate(e.target.value);
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4">
+          <h1 className="text-4xl font-bold mb-6">NASA Astronomy Picture of the Day</h1>
+          <div className="mb-4">
+            <label htmlFor="date" className="mr-2">Select Date:</label>
+            <input
+              type="date"
+              id="date"
+              value={selectedDate}
+              onChange={handleDateChange}
+              max={new Date().toISOString().split('T')[0]}
+              className="p-2 rounded bg-gray-800 text-white border border-gray-600"
+            />
+          </div>
+          {loading && <p className="text-xl">Loading...</p>}
+          {error && <p className="text-xl text-red-500">{error}</p>}
+          {apodData && (
+            <div className="max-w-4xl w-full bg-gray-800 rounded-lg shadow-lg p-6">
+              <h2 className="text-2xl font-semibold mb-4">{apodData.title}</h2>
+              {apodData.media_type === 'image' ? (
+                <img
+                  src={apodData.url}
+                  alt={apodData.title}
+                  className="w-full h-auto rounded-lg mb-4"
+                />
+              ) : (
+                <iframe
+                  src={apodData.url}
+                  title={apodData.title}
+                  className="w-full h-96 rounded-lg mb-4"
+                ></iframe>
+              )}
+              <p className="text-gray-300">{apodData.explanation}</p>
+              <p className="text-sm text-gray-500 mt-2">Date: {apodData.date}</p>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
