@@ -23,12 +23,14 @@
       const fetchApod = async (date) => {
         setLoading(true);
         setError(null);
+        setApodData(null); // Reset state
+        console.log('Fetching APOD for date:', date);
         try {
           const response = await fetch(`https://nasa-apod-backend.onrender.com/api/apod?date=${date}`);
           console.log('Fetch URL:', `https://nasa-apod-backend.onrender.com/api/apod?date=${date}`);
-          if (!response.ok) throw new Error('Failed to fetch APOD data');
+          if (!response.ok) throw new Error(`Failed to fetch APOD data: ${response.status}`);
           const data = await response.json();
-          console.log('Fetched data:', data);
+          console.log('Fetched data:', { date: data.date, title: data.title, url: data.url });
           setApodData(data);
         } catch (err) {
           setError(err.message);
@@ -68,6 +70,7 @@
           {apodData && (
             <div className="max-w-4xl w-full bg-gray-800 rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-semibold mb-4">{apodData.title}</h2>
+              {console.log('Rendering media:', { url: apodData.url, media_type: apodData.media_type })}
               {apodData.media_type === 'image' ? (
                 <img
                   src={apodData.url}
